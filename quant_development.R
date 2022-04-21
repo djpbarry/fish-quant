@@ -54,10 +54,44 @@ for(f in files){
                               slice = developed$Slice));
 }
 
+for(i in seq(from=4.5,to=17.5,by=0.25)){
+  allData <- rbind(allData,
+                   data.frame(actual_hpf = i / (0.055 * 28.5 - 0.57),
+                              prob = (i - 1.5)/17.25,
+                              type = "kimmel28.5",
+                              original_file = "",
+                              slice = -1));
+  allData <- rbind(allData,
+                   data.frame(actual_hpf = i / (0.055 * 25.0 - 0.57),
+                              prob = (i - 1.5)/17.25,
+                              type = "kimmel25",
+                              original_file = "",
+                              slice = -1));
+}
+
 #allData <- data.frame(allData, data.frame(logProb = log(allData$prob)));
 
 allData <- allData[allData$actual_hpf < 17.5, ];
 allData$predicted_hpf <- allData$prob * 17.25 + 1.5;
+
+hpfs <- seq(from=4.5,to=17.25,by=0.25);
+
+lags <- data.frame(data=matrix(data=0,nrow=length(hpfs),ncol=7));
+colnames(lags) <- c("hpf", "control_mean", "control_se", "mean25", "se25", "upper", "lower");
+
+
+for(i in 1:length(hpfs)){
+  a <- allData[(allData$type=="control" | allData$type=="control2")  & allData$actual_hpf==hpfs[i],]
+  b <- allData[allData$type=="25C" & allData$actual_hpf==hpfs[i],]
+  
+  lags$hpf[i] <- hpfs[i];
+  lags$control_mean[i] <- mean(a$predicted_hpf);
+  lags$control_se[i] <- sd(a$predicted_hpf)/sqrt(length((a$predicted_hpf)));
+  lags$mean25[i] <- mean(b$predicted_hpf);
+  lags$se25[i] <- sd(b$predicted_hpf)/sqrt(length((b$predicted_hpf)));
+  lags$upper[i] <- lags$control_mean[i] + lags$control_se[i] - (lags$mean25[i] - lags$se25[i]);
+  lags$lower[i] <- lags$control_mean[i] - lags$control_se[i] - (lags$mean25[i] + lags$se25[i]);
+}
 
 axislabel <- element_text(size=18, colour = "black");
 
@@ -65,8 +99,8 @@ p <- ggplot(NULL, aes(actual_hpf, predicted_hpf));
 p <- p + geom_jitter(data=allData[allData$type=="control",], color=c("green"));
 p <- p + geom_jitter(data=allData[allData$type=="control2",], color=c("red"));
 p <- p + geom_jitter(data=allData[allData$type=="25C",], color=c("blue"));
-#p <- p + geom_jitter(data=allData[allData$type=="26.5C",], color=c("green"));
-#p <- p + geom_jitter(data=allData[allData$type=="KO",], color=c("yellow"));
+p <- p + geom_jitter(data=allData[allData$type=="kimmel28.5",], color=c("black"));
+p <- p + geom_jitter(data=allData[allData$type=="kimmel25",], color=c("black"));
 p <- p + xlab("Actual HPF") + ylab("Predicted HPF");
 p <- p + coord_cartesian(xlim = c(4, 18), ylim = c(2, 18));
 p <- p + theme_minimal();
@@ -76,8 +110,9 @@ p <- ggplot(NULL, aes(actual_hpf, predicted_hpf));
 p <- p + geom_smooth(data=allData[allData$type=="control",], aes(colour="Control 1"), method="loess");
 p <- p + geom_smooth(data=allData[allData$type=="control2",], aes(colour="Control"), method="loess");
 p <- p + geom_smooth(data=allData[allData$type=="25C",], aes(colour="25 C"), method="loess");
-#p <- p + geom_smooth(data=allData[allData$type=="26.5C",], aes(colour="26.5 C"), method="loess");
-#p <- p + geom_smooth(data=allData[allData$type=="KO",], aes(colour="KO"), method="loess");
+p <- p + geom_smooth(data=allData[allData$type=="lag",], aes(colour="lag"), method="loess");
+#p <- p + geom_smooth(data=allData[allData$type=="kimmel28.5",], aes(colour="kimmel28.5"), method="loess");
+#p <- p + geom_smooth(data=allData[allData$type=="kimmel25",], aes(colour="kimmel25"), method="loess");
 #p <- p + geom_smooth(data=allData[allData$type=="33C",], aes(colour="33 C"), method="loess");
 p <- p + scale_colour_manual(name="", values=c("blue", "green", "red", "yellow", "purple"));
 p <- p + xlab("HPF") + ylab("Predicted HPF");
