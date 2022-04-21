@@ -107,10 +107,10 @@ p <- p + theme_minimal();
 p + theme(legend.text = axislabel, axis.text.y = axislabel, axis.text.x = axislabel, axis.title.x = axislabel, axis.title.y = axislabel, legend.title = axislabel);
 
 p <- ggplot(NULL, aes(actual_hpf, predicted_hpf));
-p <- p + geom_smooth(data=allData[allData$type=="control",], aes(colour="Control 1"), method="loess");
-p <- p + geom_smooth(data=allData[allData$type=="control2",], aes(colour="Control"), method="loess");
-p <- p + geom_smooth(data=allData[allData$type=="25C",], aes(colour="25 C"), method="loess");
-p <- p + geom_smooth(data=allData[allData$type=="lag",], aes(colour="lag"), method="loess");
+p <- p + geom_smooth(data=allData[allData$type=="control",], aes(colour="WT (rep. 1)"), method="loess");
+p <- p + geom_smooth(data=allData[allData$type=="control2",], aes(colour="WT (rep. 2)"), method="loess");
+p <- p + geom_smooth(data=allData[allData$type=="25C",], aes(colour="WT (25 C)"), method="loess");
+#p <- p + geom_smooth(data=allData[allData$type=="lag",], aes(colour="lag"), method="loess");
 #p <- p + geom_smooth(data=allData[allData$type=="kimmel28.5",], aes(colour="kimmel28.5"), method="loess");
 #p <- p + geom_smooth(data=allData[allData$type=="kimmel25",], aes(colour="kimmel25"), method="loess");
 #p <- p + geom_smooth(data=allData[allData$type=="33C",], aes(colour="33 C"), method="loess");
