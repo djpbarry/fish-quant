@@ -1,3 +1,9 @@
+
+
+[![DOI](https://zenodo.org/badge/528398305.svg)](https://zenodo.org/badge/latestdoi/528398305)
+
+
+
 # Fish Quant
 
 Scripts associated with *Jones et al (2022), Automated staging of zebrafish embryos using machine-learning.*
