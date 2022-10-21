@@ -1,6 +1,6 @@
 
 
-[![DOI](https://zenodo.org/badge/528398305.svg)](https://zenodo.org/badge/latestdoi/528398305)
+[![DOI](https://zenodo.org/badge/528398305.svg)](https://zenodo.org/badge/latestdoi/528398305) ![GitHub](https://img.shields.io/github/license/djpbarry/fish-quant?color=green&style=plastic)
 
 
 
