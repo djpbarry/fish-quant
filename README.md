@@ -6,7 +6,7 @@
 
 # Fish Quant
 
-Scripts associated with *Jones et al (2022), Automated staging of zebrafish embryos using machine-learning.*
+Jones RA, Renshaw MJ, Barry DJ and Smith JC. Automated staging of zebrafish embryos using machine learning. Wellcome Open Res 2022, 7:275 (https://doi.org/10.12688/wellcomeopenres.18313.1)
 
 ![Schematic](assets/Schematic.png)
 
