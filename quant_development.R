@@ -1,12 +1,44 @@
 library(ggplot2);
+library(sigmoid);
 
-wtDir1 <- "Z:/working/barryd/Working_Data/Smith/rebecca/outputs/2020.07.30_FishDev_WT_02_3/obj_probs";
-wtDir2 <- "Z:/working/barryd/Working_Data/Smith/rebecca/outputs/2020.07.30_FishDev_WT_01_1/obj_probs";
+wtDir1 <- "Z:/working/barryd/Working_Data/Smith/rebecca/Zebrafish_ML_Archive/outputs/2020.07.30_FishDev_WT_02_3/obj_probs";
+wtDir2 <- "Z:/working/barryd/Working_Data/Smith/rebecca/Zebrafish_ML_Archive/outputs/2020.07.30_FishDev_WT_01_1/obj_probs";
 #wtDir <- "Z:/working/barryd/Working_Data/Smith/rebecca/outputs/2020.12.04_20201127_FishDev_WT_28.5_1/obj_probs";
-wt25Dir <- "Z:/working/barryd/Working_Data/Smith/rebecca/outputs/2020.08.04_FishDev_WT_25C_1/obj_probs";
+wt25Dir <- "Z:/working/barryd/Working_Data/Smith/rebecca/Zebrafish_ML_Archive/outputs/2020.08.04_FishDev_WT_25C_1/obj_probs";
 #koDir <- "Z:/working/barryd/Working_Data/Smith/rebecca/outputs/2020.09.30_FishDev_KO1_1/obj_probs";
 #wt33Dir <- "Z:/working/barryd/Working_Data/Smith/rebecca/outputs/2020.10.01_FishDev_WT_33C_1/obj_probs";
 #wt26.5Dir <- "Z:/working/barryd/Working_Data/Smith/rebecca/outputs/2020.11.19_FishDev_WT_26.5_v2_1/obj_probs";
+
+trainingData <- c('FishDev_WT_01_1_MMStack_A2-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_B3-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_C4-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_D5-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_E6-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_F7-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_G8-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_A2-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_B3-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_C4-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_D5-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_E6-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_H9-Site_0.ome',
+                  'FishDev_WT_25C_1_MMStack_A2-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_A2-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_B1-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_C4-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_D3-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_E4-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_F6-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_G6-Site_0.ome',
+                  'FishDev_WT_01_1_MMStack_H11-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_A2-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_B3-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_C2-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_D1-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_E6-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_F4-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_G5-Site_0.ome',
+                  'FishDev_WT_02_3_MMStack_H11-Site_0.ome')
 
 hpfOffset <- 4.5;
 framesToHpf <- 0.25;
@@ -27,6 +59,20 @@ for(f in files){
   # labelIndex <- regexpr("_[[:alpha:]][[:digit:]]{1,2}-", f);
   # labelLength <- attr(labelIndex, "match.length");
   # col <- as.numeric(substr(f,labelIndex + 2, labelIndex + labelLength - 2));
+  
+  training <- FALSE;
+  
+  for(t in trainingData){
+    if(grepl(t, f)){
+      print(paste('Skipping', f));
+      training <- TRUE;
+    }
+  }
+  
+  if(training){
+    next;
+  }
+
   exp <- "control";
   if(grepl("WT_25C", f)){
     exp <- "25C";
@@ -120,3 +166,21 @@ p <- p + xlab("HPF") + ylab("Predicted HPF");
 p <- p + coord_cartesian(xlim = c(4, 18), ylim = c(2, 18));
 p <- p + theme_minimal();
 p + theme(legend.text = axislabel, axis.text.y = axislabel, axis.text.x = axislabel, axis.title.x = axislabel, axis.title.y = axislabel, legend.title = axislabel, legend.position ="bottom");
+
+axislabel <- element_text(size=35, colour = "black");
+hpfs <- seq(from=-5,to=5,by=0.01);
+sim_data = data.frame(actual_hpf=hpfs, predicted_hpf=sigmoid(hpfs) + rnorm(length(hpfs), mean=0,sd=0.1));
+
+p <- ggplot(NULL, aes(actual_hpf, predicted_hpf));
+#p <- p + geom_jitter(data=allData[allData$type=="control",], color=c("green"));
+p <- p + geom_point(data=sim_data[allData$type=="control2",], shape=21,colour="black", fill='red', size=3, stroke=2, alpha=0.75);
+p <- p + geom_smooth(data=sim_data[allData$type=="control2",], aes(colour="WT (rep. 2)"), colour='red',method="loess",show.legend = FALSE,alpha=1.0,level=0.99,linewidth=3,linetype=1);
+#p <- p + geom_jitter(data=allData[allData$type=="25C",], color=c("blue"));
+#p <- p + geom_jitter(data=allData[allData$type=="kimmel28.5",], color=c("black"));
+#p <- p + geom_jitter(data=allData[allData$type=="kimmel25",], color=c("black"));
+p <- p + xlab("Actual HPF") + ylab("Predicted HPF");
+#p <- p + coord_cartesian(xlim = c(4, 18), ylim = c(2, 18));
+p <- p + theme_minimal();
+p + theme(legend.text = axislabel, axis.text.y = element_blank(), axis.text.x = element_blank(), axis.title.x = axislabel, axis.title.y = axislabel, legend.title = axislabel);
+
+
